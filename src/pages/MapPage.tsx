@@ -6,7 +6,9 @@ import PropertyMap from "../components/map/PropertyMap";
 const MapPage = () => {
   return (
     <Layout>
-      <PropertyMap />
+      <div className="animate-fade-in">
+        <PropertyMap />
+      </div>
     </Layout>
   );
 };
