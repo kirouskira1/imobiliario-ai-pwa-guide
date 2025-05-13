@@ -13,12 +13,25 @@ interface PropertyDetailsProps {
     bedrooms: number;
     bathrooms: number;
     area: number;
+    imageUrl?: string; // Tornar opcional para compatibilidade
   };
   onScheduleVisit: () => void;
 }
 
 const PropertyDetails = ({ property, onScheduleVisit }: PropertyDetailsProps) => {
-  const { title, address, price, bedrooms, bathrooms, area } = property;
+  const { title, address, price, bedrooms, bathrooms, area, imageUrl } = property;
+
+  // Lista de imagens de backup caso a propriedade não tenha uma imagem
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
+    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
+    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9"
+  ];
+
+  // Use a imagem da propriedade ou selecione uma das imagens de backup
+  const propertyImage = imageUrl || `${fallbackImages[Number(property.id) % fallbackImages.length]}?auto=format&fit=crop&w=800&q=80`;
 
   return (
     <>
@@ -27,12 +40,16 @@ const PropertyDetails = ({ property, onScheduleVisit }: PropertyDetailsProps) =>
       </DialogHeader>
       
       <div className="mt-4 space-y-4">
-        {/* Imagem do imóvel (mockada) */}
+        {/* Imagem do imóvel */}
         <div className="h-64 bg-slate-200 rounded-md overflow-hidden relative">
           <img
-            src={`https://source.unsplash.com/featured/800x600/?apartment,house,${property.id}`}
+            src={propertyImage}
             alt={title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback para uma imagem genérica se a imagem falhar
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80";
+            }}
           />
           <div className="absolute top-3 right-3 bg-estate-primary text-white py-1 px-3 rounded-full font-bold">
             {price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}

@@ -49,6 +49,7 @@ const PropertyMap = () => {
       bathrooms: 2,
       area: 78,
       position: { top: "30%", left: "45%" },
+      imageUrl: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=2070",
     },
     {
       id: "2",
@@ -59,6 +60,7 @@ const PropertyMap = () => {
       bathrooms: 1,
       area: 65,
       position: { top: "60%", left: "30%" },
+      imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=2070",
     },
     {
       id: "3",
@@ -69,6 +71,7 @@ const PropertyMap = () => {
       bathrooms: 3,
       area: 180,
       position: { top: "40%", left: "70%" },
+      imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=1980",
     },
   ];
 
@@ -76,7 +79,7 @@ const PropertyMap = () => {
     // Simulação de carregamento do mapa
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -131,7 +134,7 @@ const PropertyMap = () => {
         className="w-full h-full bg-slate-100 relative overflow-hidden"
       >
         <img 
-          src="https://i.imgur.com/BjZHQSN.jpg" 
+          src="/lovable-uploads/b22f02e2-cf26-469d-8358-fc9cdb24b409.png" 
           alt="Mapa Estático" 
           className="w-full h-full object-cover"
         />
@@ -143,6 +146,7 @@ const PropertyMap = () => {
             className="absolute z-10 bg-estate-primary text-white rounded-full p-1 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
             style={{ top: property.position.top, left: property.position.left }}
             onClick={() => handlePropertyClick(property)}
+            aria-label={`Imóvel: ${property.title}`}
           >
             <MapPin className="h-6 w-6" />
           </button>
@@ -164,6 +168,7 @@ const PropertyMap = () => {
         <Button 
           onClick={() => setChatOpen(true)}
           className="h-14 w-14 rounded-full bg-estate-primary hover:bg-estate-secondary shadow-lg hover:shadow-xl transition-all duration-300"
+          aria-label="Abrir assistente"
         >
           <MessageCircle className="h-6 w-6 text-white" />
         </Button>
@@ -171,9 +176,12 @@ const PropertyMap = () => {
       
       {/* Dialog do assistente */}
       <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="assistant-dialog-description">
           <DialogHeader>
             <DialogTitle>Assistente LuxImob</DialogTitle>
+            <DialogDescription id="assistant-dialog-description">
+              Nosso assistente virtual está pronto para ajudar com suas buscas.
+            </DialogDescription>
           </DialogHeader>
           <div className="p-4 text-center">
             <MessageCircle className="h-12 w-12 mx-auto mb-4 text-estate-primary" />
@@ -184,7 +192,10 @@ const PropertyMap = () => {
 
       {/* Dialog de detalhes da propriedade */}
       <Dialog open={showPropertyDetails} onOpenChange={setShowPropertyDetails}>
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent className="sm:max-w-3xl" aria-describedby="property-details-description">
+          <DialogDescription id="property-details-description" className="sr-only">
+            Detalhes completos do imóvel selecionado
+          </DialogDescription>
           {selectedProperty && (
             <PropertyDetails 
               property={selectedProperty} 
@@ -196,10 +207,10 @@ const PropertyMap = () => {
 
       {/* Dialog de agendamento de visita */}
       <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="schedule-dialog-description">
           <DialogHeader>
             <DialogTitle>Agendar Visita</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="schedule-dialog-description">
               Escolha a data e horário para visitar o imóvel
             </DialogDescription>
           </DialogHeader>

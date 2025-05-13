@@ -83,6 +83,10 @@ const FavoritosPage = () => {
                     src={property.imageUrl} 
                     alt={property.title}
                     className="object-cover w-full h-full"
+                    onError={(e) => {
+                      // Fallback para uma imagem genérica se a imagem falhar
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80";
+                    }}
                   />
                   <div className="absolute top-3 right-3">
                     <Button 
@@ -93,6 +97,7 @@ const FavoritosPage = () => {
                         e.stopPropagation();
                         handleRemoveFavorite(property.id);
                       }}
+                      aria-label="Remover dos favoritos"
                     >
                       <Heart className="h-4 w-4 text-red-500 fill-red-500" />
                     </Button>
@@ -150,7 +155,8 @@ const FavoritosPage = () => {
       
       {/* Dialog de detalhes da propriedade */}
       <Dialog open={showPropertyDetails} onOpenChange={setShowPropertyDetails}>
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent className="sm:max-w-3xl" aria-describedby="property-details-dialog">
+          <div id="property-details-dialog" className="sr-only">Detalhes completos do imóvel selecionado</div>
           {selectedProperty && (
             <PropertyDetails 
               property={selectedProperty} 

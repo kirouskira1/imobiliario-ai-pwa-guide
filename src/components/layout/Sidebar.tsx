@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { 
   Home, 
   Map, 
@@ -76,6 +76,9 @@ const SidebarGroup = ({ icon, label, children, defaultOpen = false }: SidebarGro
 };
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   return (
     <>
       {/* Overlay for mobile */}
@@ -109,46 +112,53 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 icon={<Home className="h-5 w-5" />} 
                 label="Início" 
                 to="/" 
-                active 
+                active={currentPath === "/"} 
               />
               <SidebarItem 
                 icon={<Map className="h-5 w-5" />} 
                 label="Mapa" 
-                to="/mapa" 
+                to="/mapa"
+                active={currentPath === "/mapa"} 
               />
               <SidebarItem 
                 icon={<Search className="h-5 w-5" />} 
                 label="Buscar" 
-                to="/buscar" 
+                to="/buscar"
+                active={currentPath === "/buscar"} 
               />
               <SidebarItem 
                 icon={<Heart className="h-5 w-5" />} 
                 label="Favoritos" 
-                to="/favoritos" 
+                to="/favoritos"
+                active={currentPath === "/favoritos"} 
               />
             </div>
             
             <SidebarGroup 
               icon={<Calendar className="h-5 w-5" />} 
               label="Agendamentos"
+              defaultOpen={currentPath.includes("/agendamento")}
             >
               <SidebarItem 
                 icon={<Calendar className="h-4 w-4" />} 
                 label="Meus Agendamentos" 
                 to="/agendamentos" 
+                active={currentPath === "/agendamentos"} 
               />
               <SidebarItem 
                 icon={<Calendar className="h-4 w-4" />} 
                 label="Agendar Visita" 
                 to="/agendar" 
+                active={currentPath === "/agendar"} 
               />
-            </SidebarGroup>
+            </div>
             
             <div className="space-y-1">
               <SidebarItem 
                 icon={<MessageCircle className="h-5 w-5" />} 
                 label="Chat" 
-                to="/chat" 
+                to="/chat"
+                active={currentPath === "/chat"} 
               />
             </div>
             
@@ -156,12 +166,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               <SidebarItem 
                 icon={<Settings className="h-5 w-5" />} 
                 label="Configurações" 
-                to="/configuracoes" 
+                to="/configuracoes"
+                active={currentPath === "/configuracoes"} 
               />
               <SidebarItem 
                 icon={<HelpCircle className="h-5 w-5" />} 
                 label="Ajuda" 
-                to="/ajuda" 
+                to="/ajuda"
+                active={currentPath === "/ajuda"} 
               />
             </div>
           </nav>
