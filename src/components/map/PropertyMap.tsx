@@ -2,28 +2,116 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, MapPin, Filter, MessageCircle, Home, Bed, Bath, Square } from "lucide-react";
+import { Loader2, MapPin, Filter, MessageCircle, Home, Bed, Bath, Square, Calendar } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import PropertyDetails from "../property/PropertyDetails";
 
 // Componente para o mapa de propriedades
 const PropertyMap = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [showPropertyDetails, setShowPropertyDetails] = useState(false);
+  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Dados mockados de propriedades
+  const properties = [
+    {
+      id: "1",
+      title: "Apartamento Moderno - Vila Mariana",
+      address: "Rua Domingos de Morais, 1500, São Paulo",
+      price: 850000,
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 78,
+      position: { top: "30%", left: "45%" },
+    },
+    {
+      id: "2",
+      title: "Apartamento Estilo Industrial - Pinheiros",
+      address: "Rua Fradique Coutinho, 320, São Paulo",
+      price: 720000,
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 65,
+      position: { top: "60%", left: "30%" },
+    },
+    {
+      id: "3",
+      title: "Cobertura Duplex - Moema",
+      address: "Alameda dos Maracatins, 780, São Paulo",
+      price: 1450000,
+      bedrooms: 4,
+      bathrooms: 3,
+      area: 180,
+      position: { top: "40%", left: "70%" },
+    },
+  ];
 
   useEffect(() => {
     // Simulação de carregamento do mapa
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handlePropertyClick = (property: any) => {
+    setSelectedProperty(property);
+    setShowPropertyDetails(true);
+  };
+
+  const handleScheduleVisit = () => {
+    setShowPropertyDetails(false);
+    setShowScheduleDialog(true);
+  };
+
+  const handleConfirmSchedule = () => {
+    if (!scheduleDate || !scheduleTime) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Por favor, selecione data e horário para agendar a visita.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simular cadastro de agendamento
+    toast({
+      title: "Agendamento confirmado!",
+      description: `Sua visita ao imóvel ${selectedProperty?.title} está agendada para ${scheduleDate} às ${scheduleTime}.`,
+      variant: "default",
+    });
+
+    setShowScheduleDialog(false);
+    setScheduleDate("");
+    setScheduleTime("");
+  };
 
   return (
     <div className="relative w-full h-[calc(100vh-4rem)]">
@@ -37,62 +125,31 @@ const PropertyMap = () => {
         </div>
       )}
       
-      {/* Container do mapa (placeholder) */}
+      {/* Container do mapa (imagem estática) */}
       <div 
         ref={mapContainerRef} 
-        className="w-full h-full bg-slate-100 flex items-center justify-center flex-col"
+        className="w-full h-full bg-slate-100 relative overflow-hidden"
       >
-        <div className="text-lg text-estate-dark/70 mb-8 font-medium">Mapa interativo em breve aqui</div>
+        <img 
+          src="https://i.imgur.com/BjZHQSN.jpg" 
+          alt="Mapa Estático" 
+          className="w-full h-full object-cover"
+        />
         
-        {/* Cards de exemplo de imóveis que teriam pins no mapa */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl px-4">
-          {[1, 2].map((index) => (
-            <Card 
-              key={index} 
-              className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 animate-fade-in"
-            >
-              <div className="h-48 bg-slate-200 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Home className="w-12 h-12 text-slate-400" />
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-1">
-                  Apartamento Moderno - {index === 1 ? 'Vila Mariana' : 'Pinheiros'}
-                </h3>
-                <div className="flex items-center text-sm text-muted-foreground mb-3">
-                  <MapPin className="h-3.5 w-3.5 mr-1" />
-                  <span>Rua {index === 1 ? 'Domingos de Morais' : 'Fradique Coutinho'}, São Paulo</span>
-                </div>
-                <div className="flex justify-between mb-4">
-                  <div className="flex items-center">
-                    <Bed className="h-4 w-4 mr-1 text-estate-neutral" />
-                    <span className="text-sm">{index === 1 ? '3' : '2'} quartos</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Bath className="h-4 w-4 mr-1 text-estate-neutral" />
-                    <span className="text-sm">{index === 1 ? '2' : '1'} banheiros</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Square className="h-4 w-4 mr-1 text-estate-neutral" />
-                    <span className="text-sm">{index === 1 ? '78' : '65'} m²</span>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="font-semibold text-estate-primary">
-                    {index === 1 ? 'R$ 850.000' : 'R$ 720.000'}
-                  </div>
-                  <Button className="rounded-lg border-2 border-estate-primary transition-all duration-300 hover:bg-estate-secondary hover:border-estate-secondary hover:shadow-md">
-                    Agendar Visita
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        {/* Marcadores de imóveis no mapa */}
+        {properties.map((property) => (
+          <button 
+            key={property.id}
+            className="absolute z-10 bg-estate-primary text-white rounded-full p-1 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+            style={{ top: property.position.top, left: property.position.left }}
+            onClick={() => handlePropertyClick(property)}
+          >
+            <MapPin className="h-6 w-6" />
+          </button>
+        ))}
       </div>
       
-      {/* Botão de filtro - design refinado */}
+      {/* Botão de filtro */}
       <div className="absolute top-4 right-4 z-20">
         <Button 
           className="bg-white text-estate-dark hover:bg-slate-50 hover:shadow-md transition-all duration-300 rounded-lg border border-slate-200 font-medium"
@@ -112,7 +169,7 @@ const PropertyMap = () => {
         </Button>
       </div>
       
-      {/* Popup do assistente */}
+      {/* Dialog do assistente */}
       <Dialog open={chatOpen} onOpenChange={setChatOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -122,6 +179,77 @@ const PropertyMap = () => {
             <MessageCircle className="h-12 w-12 mx-auto mb-4 text-estate-primary" />
             <p className="text-lg font-medium">Em breve, nosso assistente IA vai te ajudar aqui!</p>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de detalhes da propriedade */}
+      <Dialog open={showPropertyDetails} onOpenChange={setShowPropertyDetails}>
+        <DialogContent className="sm:max-w-3xl">
+          {selectedProperty && (
+            <PropertyDetails 
+              property={selectedProperty} 
+              onScheduleVisit={handleScheduleVisit}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de agendamento de visita */}
+      <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Agendar Visita</DialogTitle>
+            <DialogDescription>
+              Escolha a data e horário para visitar o imóvel
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="date" className="text-sm font-medium">
+                Data
+              </label>
+              <input 
+                type="date" 
+                id="date" 
+                value={scheduleDate}
+                onChange={(e) => setScheduleDate(e.target.value)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="time" className="text-sm font-medium">
+                Horário
+              </label>
+              <select 
+                id="time" 
+                value={scheduleTime}
+                onChange={(e) => setScheduleTime(e.target.value)}
+                className="w-full rounded-md border border-input bg-background px-3 py-2"
+                required
+              >
+                <option value="">Selecione um horário</option>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowScheduleDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleConfirmSchedule}
+              className="bg-estate-primary hover:bg-estate-secondary"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Confirmar Agendamento
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
